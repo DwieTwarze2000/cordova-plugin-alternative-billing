@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin
+    xmlns="http://apache.org/cordova/ns/plugins/1.0"
+    id="cordova-plugin-google-play-alternative-billing-only"
+    version="0.1.0">
+
+    <name>GooglePlayAlternativeBillingOnly</name>
+
+    <description>
+        Cordova wrapper for Google Play Alternative Billing Only APIs.
+    </description>
+
+    <license>MIT</license>
+
+    <js-module
+        src="www/AlternativeBillingOnly.js"
+        name="AlternativeBillingOnly">
+
+        <clobbers target="AlternativeBillingOnly" />
+
+    </js-module>
+
+    <platform name="android">
+
+        <config-file
+            target="config.xml"
+            parent="/*">
+
+            <feature name="AlternativeBillingOnly">
+                <param
+                    name="android-package"
+                    value="com.appyourself.cordova.alternativebilling.AlternativeBillingOnly" />
+            </feature>
+
+        </config-file>
+
+        <source-file
+            src="src/android/AlternativeBillingOnly.java"
+            target-dir="src/com/appyourself/cordova/alternativebilling" />
+
+        <framework
+            src="com.android.billingclient:billing:9.1.0" />
+
+    </platform>
+
+</plugin>
