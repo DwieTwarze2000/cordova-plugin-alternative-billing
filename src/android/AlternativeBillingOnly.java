@@ -5,6 +5,7 @@ import org.apache.cordova.CordovaPlugin;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.android.billingclient.api.AlternativeBillingOnlyAvailabilityListener;
 import com.android.billingclient.api.AlternativeBillingOnlyInformationDialogListener;
@@ -66,11 +67,10 @@ public class AlternativeBillingOnly extends CordovaPlugin {
                     return;
                 }
 
-                callbackContext.error(
-                    "BILLING_SETUP_FAILED: "
-                        + billingResult.getResponseCode()
-                        + " "
-                        + billingResult.getDebugMessage()
+                sendBillingError(
+                    callbackContext,
+                    getErrorCode("BILLING_SETUP_FAILED", billingResult),
+                    billingResult
                 );
             }
 
@@ -83,7 +83,11 @@ public class AlternativeBillingOnly extends CordovaPlugin {
 
     private void isAvailable(CallbackContext callbackContext) {
         if (billingClient == null || !billingClient.isReady()) {
-            callbackContext.error("BILLING_NOT_CONNECTED");
+            sendError(
+                callbackContext,
+                "BILLING_NOT_CONNECTED",
+                "Billing client is not connected."
+            );
             return;
         }
 
@@ -98,11 +102,10 @@ public class AlternativeBillingOnly extends CordovaPlugin {
                         return;
                     }
 
-                    callbackContext.error(
-                        "ALTERNATIVE_BILLING_NOT_AVAILABLE: "
-                            + billingResult.getResponseCode()
-                            + " "
-                            + billingResult.getDebugMessage()
+                    sendBillingError(
+                        callbackContext,
+                        getErrorCode("ALTERNATIVE_BILLING_NOT_AVAILABLE", billingResult),
+                        billingResult
                     );
                 }
             }
@@ -111,7 +114,11 @@ public class AlternativeBillingOnly extends CordovaPlugin {
 
     private void showInfoDialog(CallbackContext callbackContext) {
         if (billingClient == null || !billingClient.isReady()) {
-            callbackContext.error("BILLING_NOT_CONNECTED");
+            sendError(
+                callbackContext,
+                "BILLING_NOT_CONNECTED",
+                "Billing client is not connected."
+            );
             return;
         }
 
@@ -131,15 +138,18 @@ public class AlternativeBillingOnly extends CordovaPlugin {
                             billingResult.getResponseCode()
                                 == BillingClient.BillingResponseCode.USER_CANCELED
                         ) {
-                            callbackContext.error("USER_CANCELED");
+                            sendBillingError(
+                                callbackContext,
+                                "USER_CANCELED",
+                                billingResult
+                            );
                             return;
                         }
 
-                        callbackContext.error(
-                            "INFO_DIALOG_FAILED: "
-                                + billingResult.getResponseCode()
-                                + " "
-                                + billingResult.getDebugMessage()
+                        sendBillingError(
+                            callbackContext,
+                            getErrorCode("INFO_DIALOG_FAILED", billingResult),
+                            billingResult
                         );
                     }
                 };
@@ -151,11 +161,10 @@ public class AlternativeBillingOnly extends CordovaPlugin {
                 );
 
             if (billingResult.getResponseCode() != BillingClient.BillingResponseCode.OK) {
-                callbackContext.error(
-                    "INFO_DIALOG_FAILED: "
-                        + billingResult.getResponseCode()
-                        + " "
-                        + billingResult.getDebugMessage()
+                sendBillingError(
+                    callbackContext,
+                    getErrorCode("INFO_DIALOG_FAILED", billingResult),
+                    billingResult
                 );
             }
         });
@@ -163,7 +172,11 @@ public class AlternativeBillingOnly extends CordovaPlugin {
 
     private void getReportingToken(CallbackContext callbackContext) {
         if (billingClient == null || !billingClient.isReady()) {
-            callbackContext.error("BILLING_NOT_CONNECTED");
+            sendError(
+                callbackContext,
+                "BILLING_NOT_CONNECTED",
+                "Billing client is not connected."
+            );
             return;
         }
 
@@ -178,17 +191,20 @@ public class AlternativeBillingOnly extends CordovaPlugin {
                         billingResult.getResponseCode()
                             != BillingClient.BillingResponseCode.OK
                     ) {
-                        callbackContext.error(
-                            "REPORTING_TOKEN_FAILED: "
-                                + billingResult.getResponseCode()
-                                + " "
-                                + billingResult.getDebugMessage()
+                        sendBillingError(
+                            callbackContext,
+                            getErrorCode("REPORTING_TOKEN_FAILED", billingResult),
+                            billingResult
                         );
                         return;
                     }
 
                     if (reportingDetails == null) {
-                        callbackContext.error("REPORTING_DETAILS_MISSING");
+                        sendError(
+                            callbackContext,
+                            "REPORTING_DETAILS_MISSING",
+                            "Alternative billing reporting details are missing."
+                        );
                         return;
                     }
 
@@ -199,6 +215,61 @@ public class AlternativeBillingOnly extends CordovaPlugin {
                 }
             }
         );
+    }
+
+    private String getErrorCode(
+        String defaultCode,
+        BillingResult billingResult
+    ) {
+        if (
+            billingResult.getResponseCode()
+                == BillingClient.BillingResponseCode.NETWORK_ERROR
+        ) {
+            return "NETWORK_ERROR";
+        }
+
+        return defaultCode;
+    }
+
+    private void sendBillingError(
+        CallbackContext callbackContext,
+        String code,
+        BillingResult billingResult
+    ) {
+        JSONObject error = new JSONObject();
+
+        try {
+            error.put("code", code);
+            error.put(
+                "billingResponseCode",
+                billingResult.getResponseCode()
+            );
+            error.put(
+                "message",
+                billingResult.getDebugMessage()
+            );
+
+            callbackContext.error(error);
+        } catch (JSONException exception) {
+            callbackContext.error(code);
+        }
+    }
+
+    private void sendError(
+        CallbackContext callbackContext,
+        String code,
+        String message
+    ) {
+        JSONObject error = new JSONObject();
+
+        try {
+            error.put("code", code);
+            error.put("message", message);
+
+            callbackContext.error(error);
+        } catch (JSONException exception) {
+            callbackContext.error(code);
+        }
     }
 
     @Override

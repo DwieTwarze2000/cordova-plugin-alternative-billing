@@ -1,25 +1,25 @@
-var exec = require('cordova/exec')
+var exec = require('cordova/exec');
 
 function execPromise(action) {
   return new Promise(function (resolve, reject) {
-    exec(resolve, reject, 'AlternativeBillingOnly', action, [])
-  })
+    exec(resolve, reject, 'AlternativeBillingOnly', action, []);
+  });
 }
 
 module.exports = {
   connect: function () {
-    return execPromise('connect')
+    return execPromise('connect');
   },
 
   isAvailable: function () {
-    return execPromise('isAvailable')
+    return execPromise('isAvailable');
   },
 
   showInfoDialog: function () {
-    return execPromise('showInfoDialog')
+    return execPromise('showInfoDialog');
   },
 
   getReportingToken: function () {
-    return execPromise('getReportingToken')
+    return execPromise('getReportingToken');
   },
-}
+};
