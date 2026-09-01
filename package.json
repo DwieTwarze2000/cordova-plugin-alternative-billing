@@ -1,9 +1,9 @@
 {
-  "name": "cordova-plugin-google-play-alternative-billing-only",
+  "name": "cordova-plugin-alternative-billing",
   "version": "0.1.0",
   "description": "Cordova plugin for Google Play Alternative Billing Only APIs",
   "cordova": {
-    "id": "cordova-plugin-google-play-alternative-billing-only",
+    "id": "cordova-plugin-alternative-billing",
     "platforms": [
       "android"
     ]

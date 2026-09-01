@@ -2,7 +2,7 @@
 
 <plugin
     xmlns="http://apache.org/cordova/ns/plugins/1.0"
-    id="cordova-plugin-google-play-alternative-billing-only"
+    id="cordova-plugin-alternative-billing"
     version="0.1.0">
 
     <name>GooglePlayAlternativeBillingOnly</name>
@@ -30,13 +30,17 @@
             <feature name="AlternativeBillingOnly">
                 <param
                     name="android-package"
-                    value="com.appyourself.cordova.alternativebilling.AlternativeBillingOnly" />
+                    value="com.appyourself.cordova.alternativebilling.AlternativeBillingOnlyMock" />
             </feature>
 
         </config-file>
 
         <source-file
             src="src/android/AlternativeBillingOnly.java"
+            target-dir="src/com/appyourself/cordova/alternativebilling" />
+
+        <source-file
+            src="src/android/AlternativeBillingOnlyMock.java"
             target-dir="src/com/appyourself/cordova/alternativebilling" />
 
         <framework
